@@ -1,1 +1,1 @@
-bloodhound-import -du neo4j -dp exegol4thewin *.json
+bloodhound-import -du neo4j -dp exegol4thewin *.json -p $(svcmgr -s neo4j)

@@ -1,1 +1,1 @@
-bloodhound-quickwin -u neo4j -p exegol4thewin
+bloodhound-quickwin -u neo4j -p exegol4thewin -b "bolt://127.0.0.1:$(svcmgr -s neo4j)"

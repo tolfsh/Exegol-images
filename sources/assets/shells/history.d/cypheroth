@@ -1,1 +1,1 @@
-cypheroth.sh -u neo4j -p exegol4thewin -d "$DOMAIN"
+cypheroth.sh -u neo4j -p exegol4thewin -a "127.0.0.1:$(svcmgr -s neo4j)" -d "$DOMAIN"
