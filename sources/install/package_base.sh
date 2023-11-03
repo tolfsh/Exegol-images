@@ -81,6 +81,7 @@ function deploy_exegol() {
     chown -Rv _apt:root /opt/packages
     rm -rf /.exegol || true
     cp -r /root/sources/assets/exegol /.exegol
+    ln -s /.exegol/svcmgr.py /opt/tools/bin/svcmgr
     cp -v /root/sources/assets/shells/history.d/_init ~/.zsh_history
     cp -v /root/sources/assets/shells/aliases.d/_init /opt/.exegol_aliases
     # Moving supported custom configurations in /opt
