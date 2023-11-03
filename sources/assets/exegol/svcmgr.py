@@ -30,13 +30,13 @@ DEFAULT_PORT = {
     "burp": 8080
 }
 
-SET_PORTS_DB = "/.exegol/.services.sqlite"
-# SET_PORTS_DB = "services.sqlite"
+# SET_PORTS_DB = "/.exegol/.services.sqlite"
+SET_PORTS_DB = "services.sqlite"
 
 
-def display_ports_table():
+def display_ports_table(force_print: bool = False):
     logger.debug("Printing current DB content")
-    if not logger.level == logger.DEBUG:
+    if not logger.level == logger.DEBUG and not force_print:
         return
     else:
         console = Console()
@@ -117,7 +117,7 @@ def find_available_port():
 
 
 def neo4j():
-    logger.info("Setting ports for neo4j")
+    logger.info("Setting ports for [blue]neo4j[/blue]")
 
     ports = {}
     logger.verbose("Finding ports (random or default)")
@@ -151,9 +151,18 @@ def neo4j():
     with open(CONFIG["neo4j"], 'w') as neo4j_config:
         neo4j_config.writelines(neo4j_conf)
 
+    logger.verbose("Exporting ports to DB")
+    db_write("neo4j_bolt", ports["bolt"])
+    db_write("neo4j_http", ports["http"])
+    db_write("neo4j_https", ports["https"])
+
+    logger.success(f"Set port (bolt) {db_read('neo4j_bolt')}")
+    logger.success(f"Set port (http) {db_read('neo4j_http')}")
+    logger.success(f"Set port (https) {db_read('neo4j_https')}")
+
     # Updating tools that rely on neo4j: BloodHound
 
-    logger.info("Updating BloodHound config")
+    logger.info("Updating [blue]BloodHound[/blue] config")
     with open(CONFIG["bloodhound"], 'r') as bloodhound_config:
         logger.verbose("Loading current config")
         bloodhound_conf = json.load(bloodhound_config)
@@ -166,16 +175,9 @@ def neo4j():
     with open(CONFIG["bloodhound"], 'w') as bloodhound_config:
         json.dump(bloodhound_conf, bloodhound_config, indent=4)
 
-    logger.verbose("Exporting ports to DB")
-    db_write("neo4j_bolt", ports["bolt"])
-    db_write("neo4j_http", ports["http"])
-    db_write("neo4j_https", ports["https"])
-
-    logger.success(f"Set port {db_read('neo4j_bolt')}")
-
 
 def trilium():
-    logger.info("Setting port for trilium")
+    logger.info("Setting port for [blue]trilium[/blue]")
 
     ports = {"trilium": find_available_port() or DEFAULT_PORT["trilium"]}
     logger.verbose(f"Ports found: {ports['trilium']}")
@@ -201,12 +203,12 @@ def trilium():
 
 
 def burp():
-    logger.info("Setting port for Burp Suite")
+    logger.info("Setting port for [blue]Burp Suite[/blue]")
 
     ports = {"burp": find_available_port() or DEFAULT_PORT["burp"]}
     logger.verbose(f"Ports found: {ports['burp']}")
 
-    logger.info("Updating burp config")
+    logger.verbose("Reading burp config")
     with open(CONFIG["burp"], 'r') as burp_config:
         logger.verbose("Loading current config")
         burp_conf = json.load(burp_config)
@@ -231,7 +233,7 @@ def burp():
 
 def parse_args():
     parser = argparse.ArgumentParser(add_help=True, description='Exegol services and ports manager')
-    parser.add_argument("-a", "--action", choices=['get', 'set'], nargs='?', default='get',
+    parser.add_argument("-a", "--action", choices=['get', 'set', 'init'], nargs='?', default='get',
                         help='Either set service ports when starting it, or get the ports currently in use')
     parser.add_argument("-s", "--service", choices=SERVICES, nargs='?', help="Target service")
     parser.add_argument("-v", "--verbose", dest="verbosity", action="count", default=0, help="verbosity level")
@@ -275,6 +277,12 @@ def main():
                 burp()
             else:
                 print("Service not supported")
+    elif args.action == "init":
+        logger.verbose("Settings ports for all supported services")
+        neo4j()
+        trilium()
+        burp()
+        display_ports_table(force_print=True)
 
 
 if __name__ == "__main__":
