@@ -853,23 +853,23 @@ function package_web() {
     install_web_apt_tools
     install_weevely                 # Weaponized web shell
     install_whatweb                 # Recognises web technologies including content management
-    install_wfuzz                   # Web fuzzer (second favorites)
+    #install_wfuzz                   # Web fuzzer (second favorites)
     install_gobuster                # Web fuzzer (pretty good for several extensions)
-    install_kiterunner              # Web fuzzer (fast and pretty good for api bruteforce)
-    install_amass                   # Web fuzzer
-    install_ffuf                    # Web fuzzer (little favorites)
+    #install_kiterunner              # Web fuzzer (fast and pretty good for api bruteforce)
+    #install_amass                   # Web fuzzer
+    #install_ffuf                    # Web fuzzer (little favorites)
     install_dirsearch               # Web fuzzer
-    install_ssrfmap                 # SSRF scanner
-    install_gopherus                # SSRF helper
+    #install_ssrfmap                 # SSRF scanner
+    #install_gopherus                # SSRF helper
     install_nosqlmap                # NoSQL scanner
-    install_xsstrike                # XSS scanner
-    install_xspear                  # XSS scanner
-    install_xsser                   # XSS scanner
-    install_xsrfprobe               # CSRF scanner
-    install_bolt                    # CSRF scanner
-    install_kadimus                 # LFI scanner
-    install_fuxploider              # File upload scanner
-    install_patator                 # Login scanner
+    #install_xsstrike                # XSS scanner
+    #install_xspear                  # XSS scanner
+    #install_xsser                   # XSS scanner
+    #install_xsrfprobe               # CSRF scanner
+    #install_bolt                    # CSRF scanner
+    #install_kadimus                 # LFI scanner
+    #install_fuxploider              # File upload scanner
+    #install_patator                 # Login scanner
     install_joomscan                # Joomla scanner
     install_wpscan                  # Wordpress scanner
     install_droopescan              # Drupal scanner
@@ -877,49 +877,49 @@ function package_web() {
     install_cmsmap                  # CMS scanner (Joomla, Wordpress, Drupal)
     install_moodlescan              # Moodle scanner
     install_testssl                 # SSL/TLS scanner
-    install_tls-scanner             # SSL/TLS scanner
+    #install_tls-scanner             # SSL/TLS scanner
     # install_sslyze                # SSL/TLS scanner FIXME: Only AMD ?
     install_cloudfail               # Cloudflare misconfiguration detector
     install_eyewitness              # Website screenshoter
-    install_oneforall               # OneForAll is a powerful subdomain integration tool
-    install_wafw00f                 # Waf detector
+    #install_oneforall               # OneForAll is a powerful subdomain integration tool
+    #install_wafw00f                 # Waf detector
     install_corscanner              # CORS misconfiguration detector
-    install_hakrawler               # Web endpoint discovery
-    install_gowitness               # Web screenshot utility
-    install_linkfinder              # Discovers endpoint JS files
-    install_timing_attack           # Cryptocraphic timing attack
-    install_updog                   # New HTTPServer
-    install_jwt_tool                # Toolkit for validating, forging, scanning and tampering JWTs
-    install_wuzz                    # Burp cli
+    #install_hakrawler               # Web endpoint discovery
+    #install_gowitness               # Web screenshot utility
+    #install_linkfinder              # Discovers endpoint JS files
+    #install_timing_attack           # Cryptocraphic timing attack
+    #install_updog                   # New HTTPServer
+    #install_jwt_tool                # Toolkit for validating, forging, scanning and tampering JWTs
+    #install_wuzz                    # Burp cli
     install_git-dumper              # Dump a git repository from a website
     install_gittools                # Dump a git repository from a website
-    install_ysoserial               # Deserialization payloads
-    install_phpggc                  # php deserialization payloads
+    #install_ysoserial               # Deserialization payloads
+    #install_phpggc                  # php deserialization payloads
     install_symfony-exploits        # symfony secret fragments exploit
-    install_jdwp_shellifier         # exploit java debug
-    install_httpmethods             # Tool for HTTP methods enum & verb tampering
-    install_h2csmuggler             # Tool for HTTP2 smuggling
-    install_byp4xx                  # Tool to automate 40x errors bypass attempts
-    install_feroxbuster             # ffuf but with multithreaded recursion
-    install_tomcatwardeployer       # Apache Tomcat auto WAR deployment & pwning tool
-    install_clusterd                # Axis2/JBoss/ColdFusion/Glassfish/Weblogic/Railo scanner
-    install_arjun                   # HTTP Parameter Discovery
+    #install_jdwp_shellifier         # exploit java debug
+    #install_httpmethods             # Tool for HTTP methods enum & verb tampering
+    #install_h2csmuggler             # Tool for HTTP2 smuggling
+    #install_byp4xx                  # Tool to automate 40x errors bypass attempts
+    #install_feroxbuster             # ffuf but with multithreaded recursion
+    #install_tomcatwardeployer       # Apache Tomcat auto WAR deployment & pwning tool
+    #install_clusterd                # Axis2/JBoss/ColdFusion/Glassfish/Weblogic/Railo scanner
+    #install_arjun                   # HTTP Parameter Discovery
     install_nuclei                  # Vulnerability scanner - Needed for gau install
-    install_gau                     # fetches known URLs from AlienVault's Open Threat Exchange, the Wayback Machine, Common Crawl, and URLScan
-    install_hakrevdns               # Reverse DNS lookups
-    install_httprobe                # Probe http
-    install_httpx                   # Probe http
-    install_anew                    # A tool for adding new lines to files, skipping duplicates
-    install_robotstester            # Robots.txt scanner
+    #install_gau                     # fetches known URLs from AlienVault's Open Threat Exchange, the Wayback Machine, Common Crawl, and URLScan
+    #install_hakrevdns               # Reverse DNS lookups
+    #install_httprobe                # Probe http
+    #install_httpx                   # Probe http
+    #install_anew                    # A tool for adding new lines to files, skipping duplicates
+    #install_robotstester            # Robots.txt scanner
     install_naabu                   # Fast port scanner
     # install_gitrob                # Senstive files reconnaissance in github #FIXME: Go version too old ?
-    install_burpsuite
-    install_smuggler                # HTTP Request Smuggling scanner
+    #install_burpsuite
+    #install_smuggler                # HTTP Request Smuggling scanner
     install_php_filter_chain_generator # A CLI to generate PHP filters chain and get your RCE
     install_kraken                  # Kraken is a modular multi-language webshell.
-    install_soapui                  # SoapUI is an open-source web service testing application for SOAP and REST
+    #install_soapui                  # SoapUI is an open-source web service testing application for SOAP and REST
     install_sqlmap                  # SQL injection scanner
-    install_sslscan                 # SSL/TLS scanner
+    #install_sslscan                 # SSL/TLS scanner
     end_time=$(date +%s)
     local elapsed_time=$((end_time - start_time))
     colorecho "Package web completed in $elapsed_time seconds."

@@ -1,6 +1,6 @@
 # Author: The Exegol Project
 
-ARG BASE_IMAGE_REGISTRY="nwodtuhs/exegol-misc"
+ARG BASE_IMAGE_REGISTRY="tolfsh/exegol"
 ARG BASE_IMAGE_NAME="base"
 
 FROM ${BASE_IMAGE_REGISTRY}:${BASE_IMAGE_NAME}
@@ -27,12 +27,12 @@ WORKDIR /root/sources/install
 RUN echo "${TAG}-${VERSION}" > /opt/.exegol_version
 RUN chmod +x entrypoint.sh
 RUN apt-get update
-RUN ./entrypoint.sh package_misc
-RUN ./entrypoint.sh package_wordlists
-RUN ./entrypoint.sh package_cracking
-RUN ./entrypoint.sh package_osint
+#RUN ./entrypoint.sh package_misc
+#RUN ./entrypoint.sh package_wordlists
+#RUN ./entrypoint.sh package_cracking
+#RUN ./entrypoint.sh package_osint
 RUN ./entrypoint.sh package_web
-RUN ./entrypoint.sh package_code_analysis
+#RUN ./entrypoint.sh package_code_analysis
 RUN ./entrypoint.sh post_install
 
 WORKDIR /workspace
