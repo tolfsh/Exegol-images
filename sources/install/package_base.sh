@@ -466,14 +466,14 @@ function package_base() {
     install_fzf                                         # Fuzzy finder
     add-history curl
     install_yarn
-    install_ultimate_vimrc                              # Make vim usable OOFB
-    install_neovim
-    install_mdcat                                       # cat markdown files
+    #install_ultimate_vimrc                              # Make vim usable OOFB
+    #install_neovim
+    #install_mdcat                                       # cat markdown files
     add-aliases bat
     add-test-command "bat --version"
     DEBIAN_FRONTEND=noninteractive fapt macchanger      # Macchanger
-    install_gf                                          # wrapper around grep
-    install_firefox
+    #install_gf                                          # wrapper around grep
+    #install_firefox
 
     cp -v /root/sources/assets/grc/grc.conf /etc/grc.conf # grc
 
