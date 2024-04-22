@@ -911,7 +911,7 @@ function package_web() {
     #install_httpx                   # Probe http
     #install_anew                    # A tool for adding new lines to files, skipping duplicates
     #install_robotstester            # Robots.txt scanner
-    install_naabu                   # Fast port scanner
+    #install_naabu                   # Fast port scanner
     # install_gitrob                # Senstive files reconnaissance in github #FIXME: Go version too old ?
     #install_burpsuite
     #install_smuggler                # HTTP Request Smuggling scanner
