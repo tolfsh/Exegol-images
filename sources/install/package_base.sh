@@ -350,7 +350,7 @@ function post_install() {
     # Function used to clean up post-install files
     colorecho "Cleaning..."
     local listening_processes
-    updatedb
+    #updatedb
     rm -rfv /tmp/*
     rm -rfv /var/lib/apt/lists/*
     #rm -rfv /root/sources
