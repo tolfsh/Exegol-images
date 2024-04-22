@@ -353,7 +353,11 @@ function post_install() {
     updatedb
     rm -rfv /tmp/*
     rm -rfv /var/lib/apt/lists/*
-    rm -rfv /root/sources
+    #rm -rfv /root/sources
+    if ! grep -q "source /root/sources/install/package_*.sh" ~/.zshrc; then 
+        echo "source /root/sources/install/package_*.sh" >> ~/.zshrc
+    fi
+
     colorecho "Stop listening processes"
     listening_processes=$(ss -lnpt | awk -F"," 'NR>1 {split($2,a,"="); print a[2]}')
     if [[ -n $listening_processes ]]; then
@@ -401,15 +405,11 @@ function package_base() {
     add_debian_repository_components
     apt-get update
     colorecho "Starting main programs install"
-    fapt man git lsb-release pciutils pkg-config zip unzip kmod gnupg2 wget \
-    libffi-dev  zsh asciinema npm gem automake autoconf make cmake time gcc g++ file lsof \
-    less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
-    dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
-    screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev ruby-full bundler \
-    nim perl libwww-perl openjdk-17-jdk openvpn openresolv \
-    logrotate tmux tldr bat libxml2-utils virtualenv chromium libsasl2-dev \
-    libldap2-dev libssl-dev isc-dhcp-client sqlite3 dnsutils samba ssh snmp faketime php \
-    python3 grc emacs-nox xsel xxd libnss3-tools
+    fapt man git lsb-release pkg-config zip unzip gnupg2 wget \
+    libffi-dev  zsh asciinema file less net-tools vim jq iputils-ping iproute2 \
+    dos2unix ftp telnet nfs-common netcat-openbsd p7zip-full p7zip-rar unrar xz-utils tree \
+    tldr virtualenv libssl-dev sqlite3 dnsutils ssh php \
+    python3 grc xxd
 
     filesystem
     install_locales
@@ -457,9 +457,9 @@ function package_base() {
     install_rvm                                         # Ruby Version Manager
 
     # java11 install, and java17 as default
-    install_java11
-    ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk    # To avoid determining the correct path based on the architecture
-    update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java  # Set the default openjdk version to 17
+    #install_java11
+    #ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk    # To avoid determining the correct path based on the architecture
+    #update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java  # Set the default openjdk version to 17
 
     install_go                                          # Golang language
     install_ohmyzsh                                     # Awesome shell
