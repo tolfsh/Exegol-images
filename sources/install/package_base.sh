@@ -51,10 +51,22 @@ function install_go() {
     # CODE-CHECK-WHITELIST=add-aliases,add-to-list,add-history
     colorecho "Installing go (Golang)"
     asdf plugin add golang https://github.com/asdf-community/asdf-golang.git
-    asdf install golang latest
     # 1.19 needed by sliver
     asdf install golang 1.19
-    asdf global golang latest
+    #asdf install golang latest
+    #asdf global golang latest
+    # With golang 1.23 many package build are broken, temp fix to use 1.22.2 as golang latest
+    local temp_fix_limit="2024-11-01"
+    if [[ "$(date +%Y%m%d)" -gt "$(date -d $temp_fix_limit +%Y%m%d)" ]]; then
+      criticalecho "Temp fix expired. Exiting."
+    else
+      # 1.23 needed by BloodHound-CE
+      asdf install golang 1.23.0
+      # Default GO version: 1.22.2
+      asdf install golang 1.22.2
+      asdf global golang 1.22.2
+    fi
+
 #    if command -v /usr/local/go/bin/go &>/dev/null; then
 #        return
 #    fi
@@ -177,7 +189,8 @@ function install_rvm() {
     rvm autolibs read-fail
     rvm rvmrc warning ignore allGemfiles
     rvm use 3.2.2@default
-    rvm install ruby-3.1.2
+    rvm install ruby-3.1.2  # needed by cewl, pass-station, evil-winrm
+    rvm install ruby-3.1.5  # needed metasploit-framework
     rvm get head
     gem update
     add-test-command "rvm --version"
@@ -259,7 +272,7 @@ function install_neovim() {
     then
         # Build take ~5min
         fapt gettext
-        git clone https://github.com/neovim/neovim.git
+        git clone --depth 1 https://github.com/neovim/neovim.git
         cd neovim || exit
         make CMAKE_BUILD_TYPE=RelWithDebInfo
         make install
@@ -321,12 +334,31 @@ function install_java11() {
         criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
     fi
     local jdk_url
-    jdk_url=$(curl --location --silent "https://api.github.com/repos/adoptium/temurin11-binaries/releases/latest" | grep 'browser_download_url.*jdk_'"$arch"'_linux.*tar.gz"' | grep -o 'https://[^"]*')
+    jdk_url=$(curl --location --silent "https://api.github.com/repos/adoptium/temurin11-binaries/releases" | grep 'browser_download_url.*jdk_'"$arch"'_linux.*tar.gz"' | grep -o 'https://[^"]*' | sort | tail -n1)
     curl --location -o /tmp/openjdk11-jdk.tar.gz "$jdk_url"
     tar -xzf /tmp/openjdk11-jdk.tar.gz --directory /tmp
     mkdir -p "/usr/lib/jvm"
     mv /tmp/jdk-11* /usr/lib/jvm/java-11-openjdk
     add-test-command "/usr/lib/jvm/java-11-openjdk/bin/java --version"
+}
+
+function install_java21() {
+    # CODE-CHECK-WHITELIST=add-history,add-aliases,add-to-list
+    colorecho "Installing java 11"
+    if [[ $(uname -m) = 'x86_64' ]]
+    then
+        wget -O /tmp/openjdk21-jdk.tar.gz "https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_linux-x64_bin.tar.gz"
+
+    elif [[ $(uname -m) = 'aarch64' ]]
+    then
+        wget -O /tmp/openjdk21-jdk.tar.gz "https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_linux-aarch64_bin.tar.gz"
+    else
+        criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+    fi
+    tar -xzf /tmp/openjdk21-jdk.tar.gz --directory /tmp
+    mkdir -p "/usr/lib/jvm"
+    mv /tmp/jdk-21* /usr/lib/jvm/java-21-openjdk
+    add-test-command "/usr/lib/jvm/java-21-openjdk/bin/java --version"
 }
 
 function add_debian_repository_components() {
@@ -403,13 +435,28 @@ function package_base() {
     install_exegol-history
     fapt software-properties-common
     add_debian_repository_components
+    cp -v /root/sources/assets/apt/sources.list.d/* /etc/apt/sources.list.d/
+    cp -v /root/sources/assets/apt/preferences.d/* /etc/apt/preferences.d/
     apt-get update
     colorecho "Starting main programs install"
+<<<<<<< HEAD
     fapt man git lsb-release pkg-config zip unzip gnupg2 wget \
     libffi-dev  zsh asciinema file less net-tools vim jq iputils-ping iproute2 \
     dos2unix ftp telnet nfs-common netcat-openbsd p7zip-full p7zip-rar unrar xz-utils tree \
     tldr virtualenv libssl-dev sqlite3 dnsutils ssh php \
     python3 grc xxd
+=======
+    fapt man git lsb-release pciutils pkg-config zip unzip kmod gnupg2 wget \
+    libffi-dev  zsh asciinema npm gem automake autoconf make cmake time gcc g++ file lsof \
+    less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
+    dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
+    screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev ruby-full bundler \
+    nim perl libwww-perl openjdk-17-jdk openvpn openresolv \
+    logrotate tmux tldr bat libxml2-utils virtualenv chromium libsasl2-dev \
+    libldap2-dev libssl-dev isc-dhcp-client sqlite3 dnsutils samba ssh snmp faketime php \
+    python3 grc emacs-nox xsel xxd libnss3-tools
+    apt-mark hold tzdata  # Prevent apt upgrade error when timezone sharing is enable
+>>>>>>> exegol/main
 
     filesystem
     install_locales
@@ -457,9 +504,16 @@ function package_base() {
     install_rvm                                         # Ruby Version Manager
 
     # java11 install, and java17 as default
+<<<<<<< HEAD
     #install_java11
     #ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk    # To avoid determining the correct path based on the architecture
     #update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java  # Set the default openjdk version to 17
+=======
+    install_java11
+    install_java21
+    ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk    # To avoid determining the correct path based on the architecture
+    update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java  # Set the default openjdk version to 17
+>>>>>>> exegol/main
 
     install_go                                          # Golang language
     install_ohmyzsh                                     # Awesome shell
@@ -484,7 +538,7 @@ function package_base() {
 
     LINE=$(($(grep -n 'resolvconf -a' /etc/openvpn/update-resolv-conf | cut -d ':' -f1) +1))
     # shellcheck disable=SC2016
-    sed -i "${LINE}"'i [ "$(resolvconf -l "tun*" | grep -vE "^(\s*|#.*)$")" ] && /sbin/resolvconf -u || cp /etc/resolv.conf.backup /etc/resolv.conf' /etc/openvpn/update-resolv-conf
+    sed -i "${LINE}"'i [ "$((resolvconf -l "tun*" 2>/dev/null || resolvconf -l "tap*") | grep -vE "^(\s*|#.*)$")" ] && /sbin/resolvconf -u || cp /etc/resolv.conf.backup /etc/resolv.conf' /etc/openvpn/update-resolv-conf
     ((LINE++))
     sed -i "${LINE}"'i rm /etc/resolv.conf.backup' /etc/openvpn/update-resolv-conf
     add-test-command "openvpn --version"
@@ -501,12 +555,18 @@ function package_base() {
     mkdir -p ~/.local/share/tldr
     tldr -u
 
-    # NVM (install in conctext)
+    # NVM (install in context)
     zsh -c "source ~/.zshrc && nvm install node && nvm use default"
 
     # Set Global config path to vendor
     # All programs using bundle will store their deps in vendor/
     bundle config path vendor/
 
-    # Remote Graphical Desktop installation
+    # OpenSSL activate legacy support
+    cat /root/sources/assets/patches/openssl.patch >> /etc/ssl/openssl.cnf
+    add-test-command "echo -n '1337' | openssl dgst -md4"
+    add-test-command "python3 -c 'import hashlib;print(hashlib.new(\"md4\", \"1337\".encode()).digest())'"
+
+    # Global python dependencies
+    pip3 install -r /root/sources/assets/python/requirements.txt
 }

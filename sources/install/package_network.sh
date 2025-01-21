@@ -8,10 +8,7 @@ function install_network_apt_tools() {
     colorecho "Installing network apt tools"
     export DEBIAN_FRONTEND=noninteractive
     fapt wireshark tshark hping3 masscan netdiscover tcpdump iptables traceroute dns2tcp freerdp2-x11 \
-    rdesktop xtightvncviewer ssh-audit hydra mariadb-client redis-tools
-    fapt remmina remmina-plugin-rdp remmina-plugin-secret
-    # remmina-plugin-spice need build ?
-    # https://gitlab.com/Remmina/Remmina/-/wikis/Compilation/Compile-on-Debian-10-Buster
+    rdesktop xtightvncviewer hydra mariadb-client redis-tools
 
     add-history wireshark
     add-history tshark
@@ -37,11 +34,9 @@ function install_network_apt_tools() {
     add-test-command "which xfreerdp"
     add-test-command "rdesktop|& grep 'Usage: rdesktop'"
     add-test-command "which xtightvncviewer"
-    add-test-command "ssh-audit --help |& grep 'verbose output'"    # SSH server audit
     add-test-command "hydra -h |& grep 'more command line options'" # Login scanner
     add-test-command "mariadb --version"                            # Mariadb client
     add-test-command "redis-cli --version"                          # Redis protocol
-    add-test-command "remmina --help"                          # Redis protocol
 
     add-to-list "wireshark,https://github.com/wireshark/wireshark,Wireshark is a network protocol analyzer that lets you see what’s happening on your network at a microscopic level."
     add-to-list "tshark,https://github.com/wireshark/wireshark,TShark is a terminal version of Wireshark."
@@ -55,11 +50,9 @@ function install_network_apt_tools() {
     add-to-list "freerdp2-x11,https://github.com/FreeRDP/FreeRDP,FreeRDP is a free implementation of the Remote Desktop Protocol (RDP) released under the Apache license."
     add-to-list "rdesktop,https://github.com/rdesktop/rdesktop,rdesktop is a client for Remote Desktop Protocol (RDP) used in a number of Microsoft products including Windows NT Terminal Server / Windows 2000 Server / Windows XP and Windows 2003 Server."
     add-to-list "xtightvncviewer,https://www.commandlinux.com/man-page/man1/xtightvncviewer.1.html,xtightvncviewer is an open source VNC client software."
-    add-to-list "ssh-audit,https://github.com/arthepsy/ssh-audit,ssh-audit is a tool to test SSH server configuration for best practices."
     add-to-list "hydra,https://github.com/vanhauser-thc/thc-hydra,Hydra is a parallelized login cracker which supports numerous protocols to attack."
     add-to-list "mariadb-client,https://github.com/MariaDB/server,MariaDB is a community-developed fork of the MySQL relational database management system. The mariadb-client package includes command-line utilities for interacting with a MariaDB server."
     add-to-list "redis-tools,https://github.com/antirez/redis-tools,redis-tools is a collection of Redis client utilities including redis-cli and redis-benchmark."
-    add-to-list "remmina,https://github.com/FreeRDP/Remmina,Remote desktop client."
 }
 
 function install_proxychains() {
@@ -80,11 +73,28 @@ function install_proxychains() {
     add-to-list "proxychains,https://github.com/rofl0r/proxychains,Proxy chains - redirect connections through proxy servers."
 }
 
+function install_remmina() {
+    colorecho "Installing remmina"
+    # CODE-CHECK-WHITELIST=add-aliases,add-history
+    fapt remmina remmina-plugin-rdp remmina-plugin-secret
+    # remmina-plugin-spice need build ?
+    # https://gitlab.com/Remmina/Remmina/-/wikis/Compilation/Compile-on-Debian-10-Buster
+
+    # Create default remmina config
+    mkdir -p /root/.config/remmina
+    # Use the same keymap for RDP than the local client
+    echo "[remmina_pref]
+rdp_use_client_keymap=1" > /root/.config/remmina/remmina.pref
+
+    add-test-command "remmina --help"
+    add-to-list "remmina,https://github.com/FreeRDP/Remmina,Remote desktop client."
+}
+
 function install_nmap() {
     colorecho "Installing nmap"
     # echo 'deb http://deb.debian.org/debian bullseye-backports main' > /etc/apt/sources.list.d/backports.list
     # nmap in main repo is a latest version
-    apt-get update
+    # apt-get update
     fapt nmap
     add-aliases nmap
     add-history nmap
@@ -112,7 +122,7 @@ function install_autorecon() {
     git -C /opt/tools clone --depth 1 https://gitlab.com/kalilinux/packages/tnscmd10g.git
     ln -sv /opt/tools/tnscmd10g/tnscmd10g /usr/bin/tnscmd10g
     fapt dnsrecon wkhtmltopdf
-    pipx install git+https://github.com/Tib3rius/AutoRecon
+    pipx install --system-site-packages git+https://github.com/Tib3rius/AutoRecon
     add-history autorecon
     # test below cannot work because test runner cannot have a valid display
     # add-test-command "autorecon --version"
@@ -124,7 +134,7 @@ function install_dnschef() {
     colorecho "Installing DNSChef"
     git -C /opt/tools/ clone --depth 1 https://github.com/iphelix/dnschef
     cd /opt/tools/dnschef || exit
-    python3 -m venv ./venv
+    python3 -m venv --system-site-packages ./venv
     source ./venv/bin/activate
     pip3 install -r requirements.txt
     deactivate
@@ -137,7 +147,7 @@ function install_dnschef() {
 function install_divideandscan() {
     # CODE-CHECK-WHITELIST=add-aliases
     colorecho "Installing DivideAndScan"
-    pipx install git+https://github.com/snovvcrash/DivideAndScan
+    pipx install --system-site-packages git+https://github.com/snovvcrash/DivideAndScan
     add-history divideandscan
     add-test-command "divideandscan --help"
     add-to-list "divideandscan,https://github.com/snovvcrash/divideandscan,Advanced subdomain scanner"
@@ -157,7 +167,7 @@ function install_chisel() {
 function install_sshuttle() {
     # CODE-CHECK-WHITELIST=add-aliases
     colorecho "Installing sshtuttle"
-    pipx install git+https://github.com/sshuttle/sshuttle.git
+    pipx install --system-site-packages git+https://github.com/sshuttle/sshuttle.git
     add-history sshuttle
     add-test-command "sshuttle --version"
     add-to-list "sshuttle,https://github.com/sshuttle/sshuttle,Transparent proxy server that tunnels traffic through an SSH server"
@@ -167,8 +177,8 @@ function install_eaphammer() {
     colorecho "Installing eaphammer"
     git -C /opt/tools clone --depth 1 https://github.com/s0lst1c3/eaphammer.git
     cd /opt/tools/eaphammer || exit
-    xargs apt install -y < kali-dependencies.txt
-    python3 -m venv ./venv
+    fapt apache2 dnsmasq libssl-dev libnfnetlink-dev libnl-3-dev libnl-genl-3-dev libcurl4-openssl-dev zlib1g-dev libpcap-dev
+    python3 -m venv --system-site-packages ./venv
     source ./venv/bin/activate
     pip3 install -r pip.req
     deactivate
@@ -181,7 +191,7 @@ function install_eaphammer() {
 function install_fierce() {
     # CODE-CHECK-WHITELIST=add-aliases
     colorecho "Installing fierce"
-    pipx install git+https://github.com/mschwager/fierce
+    pipx install --system-site-packages git+https://github.com/mschwager/fierce
     add-history fierce
     add-test-command "fierce --help"
     add-to-list "fierce,https://github.com/mschwager/fierce,A DNS reconnaissance tool for locating non-contiguous IP space"
@@ -266,6 +276,15 @@ function install_legba() {
     add-to-list "legba,https://github.com/evilsocket/legba,a multiprotocol credentials bruteforcer / password sprayer and enumerator built with Rust"
 }
 
+function install_ssh-audit() {
+    # CODE-CHECK-WHITELIST=add-aliases
+    colorecho "Installing ssh-audit"
+    pipx install --system-site-packages git+https://github.com/jtesta/ssh-audit
+    add-history ssh-audit
+    add-test-command "ssh-audit --help"
+    add-to-list "ssh-audit,https://github.com/jtesta/ssh-audit,ssh-audit is a tool to test SSH server configuration for best practices."
+}
+
 # Package dedicated to network pentest tools
 function package_network() {
     set_env
@@ -290,6 +309,7 @@ function package_network() {
     install_ligolo-ng               # Tunneling tool that uses a TUN interface
     install_rustscan
     install_legba                   # Login Scanner
+    install_ssh-audit               # SSH server audit
     end_time=$(date +%s)
     local elapsed_time=$((end_time - start_time))
     colorecho "Package network completed in $elapsed_time seconds."
