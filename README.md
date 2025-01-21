@@ -11,7 +11,9 @@ Exegol-Images is using a smart way to install tools. Each tool installation is w
 In my version, the install scripts are not removed, even better the function are loaded in you `.zshrc`. This means if you need a tool, you can install it the *Exegol way* by running `install_TOOLNAME`.
 
 ----------------------------
-*Below this is the original Exegol-Images README.
+
+*Below this is the original Exegol-Images README.*
+
 -----------------------------
 
 > **📌 This repository hosts code for Exegol images, a submodule of the Exegol project. 
