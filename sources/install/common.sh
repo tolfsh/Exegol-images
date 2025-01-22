@@ -134,6 +134,6 @@ function define_retry_function() {
 }
 
 # Dynamically create wrappers
-for CMD in "${CATCH_AND_RETRY_COMMANDS[@]}"; do
-  define_retry_function "$CMD"
-done
+#for CMD in "${CATCH_AND_RETRY_COMMANDS[@]}"; do
+#  define_retry_function "$CMD"
+#done
