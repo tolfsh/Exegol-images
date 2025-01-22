@@ -5,6 +5,9 @@ The objective is to get rid of unused exegol features that I do not personally u
 ## What did I do?
 I removed unused feature from the `sources/dockerfiles/*.dockerfile`. I juste worked on `base`, `ad` and `web` images.
 
+## Using Docker caching functionality
+During development, it was very hard to make quick tests because of the way the images are built. Indeed, the whole installation process is contained into a single bash function. Therefore, an error in the function leads to the whole installation process failing, even huge `apt install`. I decided to remake the Dockerfile to be able to use docker caching feature. This has the cons of making a big Dockerfile but at least you don't need to rewait half an hour if the installation fails at the end.
+
 ## What if a tool is missing?
 Exegol-Images is using a smart way to install tools. Each tool installation is written inside a bash function. When build the images, all the function are loaded and the function are called, installing what is needed. During post installation, all the install scripts are removed. 
 
