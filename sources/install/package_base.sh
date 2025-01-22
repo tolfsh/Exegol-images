@@ -3,32 +3,6 @@
 
 source common.sh
 
-function update() {
-    colorecho "Updating, upgrading, cleaning"
-    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-    apt-get -y update && apt-get -y install apt-utils dialog && apt-get -y upgrade && apt-get -y autoremove && apt-get clean
-}
-
-function install_exegol-history() {
-    colorecho "Installing Exegol-history"
-    #  git -C /opt/tools/ clone --depth 1 https://github.com/ThePorgs/Exegol-history
-    # todo : below is something basic. A nice tool being created for faster and smoother workflow
-    mkdir -p /opt/tools/Exegol-history
-    rm -rf /opt/tools/Exegol-history/profile.sh
-    {
-      echo "#export INTERFACE='eth0'"
-      echo "#export DOMAIN='DOMAIN.LOCAL'"
-      echo "#export DOMAIN_SID='S-1-5-11-39129514-1145628974-103568174'"
-      echo "#export USER='someuser'"
-      echo "#export PASSWORD='somepassword'"
-      echo "#export NT_HASH='c1c635aa12ae60b7fe39e28456a7bac6'"
-      echo "#export DC_IP='192.168.56.101'"
-      echo "#export DC_HOST='DC01.DOMAIN.LOCAL'"
-      echo "#export TARGET='192.168.56.69'"
-      echo "#export ATTACKER_IP='192.168.56.1'"
-    } >> /opt/tools/Exegol-history/profile.sh
-}
-
 function install_rust_cargo() {
     # CODE-CHECK-WHITELIST=add-aliases,add-to-list,add-history
     colorecho "Installing rustc, cargo, rustup"
@@ -39,16 +13,9 @@ function install_rust_cargo() {
     add-test-command "cargo --version"
 }
 
-function filesystem() {
-    colorecho "Preparing filesystem"
-    mkdir -p /opt/tools/bin/ /data/ /var/log/exegol /.exegol/build_pipeline_tests/
-    touch /.exegol/build_pipeline_tests/all_commands.txt
-    touch /.exegol/installed_tools.csv
-    echo "Tool,Link,Description" >> /.exegol/installed_tools.csv
-}
-
 function install_go() {
     # CODE-CHECK-WHITELIST=add-aliases,add-to-list,add-history
+    source "$HOME/.asdf/asdf.sh"
     colorecho "Installing go (Golang)"
     asdf plugin add golang https://github.com/asdf-community/asdf-golang.git
     # 1.19 needed by sliver
@@ -88,25 +55,6 @@ function install_go() {
 #    rm -rf /tmp/go.tar.gz
 #    export PATH=$PATH:/usr/local/go/bin
     add-test-command "go version"
-}
-
-function deploy_exegol() {
-    colorecho "Installing Exegol things"
-    # Moving exegol files to /
-    # It's copied and not moved for caching and updating purposes (reusing exegol_base to create exegol_base)
-    # mkdir -p /opt/packages
-    # chown -Rv _apt:root /opt/packages
-    rm -rf /.exegol || true
-    cp -r /root/sources/assets/exegol /.exegol
-    cp -v /root/sources/assets/shells/history.d/_init ~/.zsh_history
-    cp -v /root/sources/assets/shells/aliases.d/_init /opt/.exegol_aliases
-    # Moving supported custom configurations in /opt
-    mv /.exegol/skel/supported_setups.md /opt/
-    mkdir -p /var/log/exegol
-    # Setup perms
-    chown -R root:root /.exegol
-    chmod 500 /.exegol/*.sh
-    find /.exegol/skel/ -type f -exec chmod 660 {} \;
 }
 
 function install_locales() {
@@ -361,23 +309,6 @@ function install_java21() {
     add-test-command "/usr/lib/jvm/java-21-openjdk/bin/java --version"
 }
 
-function add_debian_repository_components() {
-    # add non-free non-free-firmware contrib repository
-    # adding at the end of the line start with Components of the repository to add
-    colorecho "add non-free non-free-firmware contrib repository"
-    local source_file="/etc/apt/sources.list.d/debian.sources"
-    local out_file="/etc/apt/sources.list.d/debian2.sources"
-
-    while IFS= read -r line; do
-      if [[ "$line" == "Components"* ]]; then
-        echo  "${line} non-free non-free-firmware contrib" >> "$out_file"
-      else
-        echo "$line" >> "$out_file"
-      fi
-    done < "$source_file"
-    mv "$out_file" "$source_file"
-}
-
 function post_install() {
     # Function used to clean up post-install files
     colorecho "Cleaning..."
@@ -431,6 +362,27 @@ function install_asdf() {
     source "$HOME/.asdf/completions/asdf.bash"
     add-test-command "asdf version"
     add-to-list "asdf,https://github.com/asdf-vm/asdf,Extendable version manager with support for ruby python go etc"
+}
+
+function setup_python_env() {
+    # setup Python environment
+    # the order matters (if 2 is before 3, `python` will point to Python 2)
+    PYTHON_VERSIONS="3.11 3.12 3.10 3.6 2"
+    install_pyenv
+    pip2 install --no-cache-dir virtualenv
+    local v
+    # https://stackoverflow.com/questions/75608323/how-do-i-solve-error-externally-managed-environment-everytime-i-use-pip3
+    # TODO: do we really want to unset EXTERNALLY-MANAGED? Not sure it's the best course of action
+    # with pyenv, not sure the command below is needed anymore
+    # rm /usr/lib/python3.*/EXTERNALLY-MANAGED
+    for v in $PYTHON_VERSIONS; do
+        # shellcheck disable=SC2086
+        pip${v} install --upgrade pip
+        # shellcheck disable=SC2086
+        pip${v} install wheel
+    done
+    install_pipx
+
 }
 
 # Package dedicated to the basic things the env needs
