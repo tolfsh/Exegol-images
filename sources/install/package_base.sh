@@ -386,8 +386,16 @@ function post_install() {
     rm -rfv /tmp/*
     rm -rfv /var/lib/apt/lists/*
     #rm -rfv /root/sources
-    if ! grep -q "source /root/sources/install/package_*.sh" ~/.zshrc; then 
-        echo "source /root/sources/install/package_*.sh" >> ~/.zshrc
+    if ! grep -q "for file in /root/sources/install/package_*.sh; do" ~/.zshrc; then 
+        cat << EOF >> ~/.zshrc
+
+# Sourcing install files
+for file in /root/sources/install/package_*.sh; do
+    if [ -f "$file" ]; then
+        source "$file"
+    fi
+done
+EOF
     fi
     # modify sourcing of install files
     sed -i 's|source common\.sh|source /root/sources/install/common.sh|g' /root/sources/install/package_*.sh
