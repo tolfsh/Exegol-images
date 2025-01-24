@@ -25,11 +25,15 @@ RUN cp -v /root/sources/assets/apt/sources.list.d/* /etc/apt/sources.list.d/
 RUN cp -v /root/sources/assets/apt/preferences.d/* /etc/apt/preferences.d/
 RUN apt-get update
 RUN ./preinstall.sh colorecho "Starting main programs install"
-RUN apt-fast install -y --no-install-recommends man git lsb-release pkg-config zip unzip gnupg2 wget \
-    libffi-dev  zsh asciinema file less net-tools vim jq iputils-ping iproute2 \
-    dos2unix ftp telnet nfs-common netcat-openbsd p7zip-full p7zip-rar unrar xz-utils tree \
-    tldr virtualenv libssl-dev sqlite3 dnsutils ssh php \
-    python3 grc xxd
+RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y --no-install-recommends man git lsb-release pciutils pkg-config zip unzip kmod gnupg2 wget \
+libffi-dev  zsh asciinema npm gem automake autoconf make cmake time gcc g++ file lsof \
+less net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
+dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat \
+screen p7zip-full p7zip-rar unrar xz-utils tree ruby ruby-dev ruby-full bundler \
+perl libwww-perl openjdk-17-jdk \
+logrotate tldr bat libxml2-utils virtualenv libsasl2-dev \
+libldap2-dev libssl-dev isc-dhcp-client sqlite3 dnsutils samba ssh snmp php \
+python3 grc xsel xxd libnss3-tools macchanger
 
 # now we need assets
 COPY sources/assets /root/sources/assets
@@ -48,7 +52,7 @@ RUN ./entrypoint.sh install_locales
 
 RUN ./entrypoint.sh install_asdf
 
-RUN ./entrypoint.sh setup_python_env
+RUN ./entrypoint.sh  setup_python_env 
 
 # change default shell
 RUN chsh -s /bin/zsh
@@ -72,37 +76,20 @@ RUN ./entrypoint.sh install_rust_cargo
 # Ruby Version Manager
 RUN ./entrypoint.sh install_rvm
 
-# java11 install, and java17 as default
-#install_java11
-#ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk    # To avoid determining the correct path based on the architecture
-#update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java  # Set the default openjdk version to 17
+# install java 
+RUN ./entrypoint.sh install_java11
+RUN ./entrypoint.sh install_java21
+RUN ln -s -v /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17-openjdk
+RUN update-alternatives --set java /usr/lib/jvm/java-17-openjdk-*/bin/java
 
 RUN ./entrypoint.sh install_go                                          
 RUN ./entrypoint.sh install_ohmyzsh                                     
 RUN ./entrypoint.sh install_fzf                                         
 RUN ./entrypoint.sh install_yarn
-#install_ultimate_vimrc                              # Make vim usable OOFB
-#install_neovim
-#install_mdcat                                       # cat markdown files
 RUN ./entrypoint.sh add-aliases bat
-RUN ./entrypoint.sh add-test-command "bat --version"
-# Macchanger
-RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y --no-install-recommends macchanger      
-#install_gf                                          # wrapper around grep
-#install_firefox
+RUN ./entrypoint.sh add-test-command "bat --version"    
 
-RUN cp -v /root/sources/assets/grc/grc.conf /etc/grc.conf # grc
-
-# openvpn
-# Fixing openresolv to update /etc/resolv.conf without resolvectl daemon (with a fallback if no DNS server are supplied)
-RUN LINE=$(($(grep -n 'up)' /etc/openvpn/update-resolv-conf | cut -d ':' -f1) +1));\
-sed -i "${LINE}"'i cp /etc/resolv.conf /etc/resolv.conf.backup' /etc/openvpn/update-resolv-conf;\
-LINE=$(($(grep -n 'resolvconf -a' /etc/openvpn/update-resolv-conf | cut -d ':' -f1) +1));\
-# shellcheck disable=SC2016
-sed -i "${LINE}"'i [ "$((resolvconf -l "tun*" 2>/dev/null || resolvconf -l "tap*") | grep -vE "^(\s*|#.*)$")" ] && /sbin/resolvconf -u || cp /etc/resolv.conf.backup /etc/resolv.conf' /etc/openvpn/update-resolv-conf;\
-((LINE++));\
-sed -i "${LINE}"'i rm /etc/resolv.conf.backup' /etc/openvpn/update-resolv-conf
-RUN ./entrypoint.sh add-test-command "openvpn --version"
+RUN cp -v /root/sources/assets/grc/grc.conf /etc/grc.conf
 
 # logrotate
 RUN mv /root/sources/assets/logrotate/* /etc/logrotate.d/
@@ -129,17 +116,21 @@ RUN ./entrypoint.sh add-test-command "echo -n '1337' | openssl dgst -md4"
 RUN ./entrypoint.sh add-test-command "python3 -c 'import hashlib;print(hashlib.new(\"md4\", \"1337\".encode()).digest())'"
 
 # Global python dependencies
-RUN pip3 install -r /root/sources/assets/python/requirements.txt
+RUN /root/.pyenv/shims/pip3 install -r /root/sources/assets/python/requirements.txt
 ####################
 # end package_base #
 ####################
 
-
+COPY sources/install/package_network.sh /root/sources/install
 RUN ./entrypoint.sh install_nmap
-RUN ./entrypoint.sh post_install
+
+# put all packages for future install inside the container
+COPY sources/install /root/sources/install
+
+# run post install (will modify the installed files for source to work so we put it after the copy)
+RUN chmod +x entrypoint.sh && ./entrypoint.sh post_install
 
 WORKDIR /workspace
-
 ENTRYPOINT ["/.exegol/entrypoint.sh"]
 
 # put label at the end to not invalidate cache
