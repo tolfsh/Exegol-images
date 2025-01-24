@@ -19,16 +19,12 @@ else
       echo "This script is running in docker, as it should :)"
       echo "If you see things in red, don't panic, it's usually not errors, just badly handled colors"
       echo -e "${NOCOLOR}"
-      for cmd in "$@"; do
-        "$cmd"
-      done
+      "$@"
     else
       echo -e "${RED}"
       echo "[!] Careful : this script is supposed to be run inside a docker/VM, do not run this on your host unless you know what you are doing and have done backups. You have been warned :)"
       echo -e "${NOCOLOR}"
-      for cmd in "$@"; do
-        "$cmd"
-      done
+      "$@"
     fi
   else
     echo "'$1' is not a known function name" >&2
