@@ -322,14 +322,18 @@ function post_install() {
 
 # Sourcing install files
 for file in /root/sources/install/package_*.sh; do
-    if [ -f "$file" ]; then
-        source "$file"
+    if [ -f "\$file" ]; then
+        source "\$file"
     fi
 done
 EOF
     fi
     # modify sourcing of install files
     sed -i 's|source common\.sh|source /root/sources/install/common.sh|g' /root/sources/install/package_*.sh
+    sed -i 's|source \(package_.*\.sh\)|source /root/sources/install/\1|g' /root/sources/install/package_*.sh
+    sed -i '/set -e/d' /root/sources/install/*.sh
+
+
 
     colorecho "Stop listening processes"
     listening_processes=$(ss -lnpt | awk -F"," 'NR>1 {split($2,a,"="); print a[2]}')
