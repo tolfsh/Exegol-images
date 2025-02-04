@@ -16,19 +16,19 @@ WORKDIR /root/sources/install
 # ./entrypoint.sh package_most_used
 RUN chmod +x entrypoint.sh
 
-RUN ./entrypoint.sh set_env install_nuclei
-RUN ./entrypoint.sh set_env install_weevely
-RUN ./entrypoint.sh set_env install_whatweb
-RUN ./entrypoint.sh set_env install_wfuzz
-RUN ./entrypoint.sh set_env install_gobuster
-RUN ./entrypoint.sh set_env install_dirsearch
-RUN ./entrypoint.sh set_env install_nosqlmap
-RUN ./entrypoint.sh set_env install_joomscan
-RUN ./entrypoint.sh set_env install_wpscan
-RUN ./entrypoint.sh set_env install_droopescan
-RUN ./entrypoint.sh set_env install_testssl
-RUN ./entrypoint.sh set_env install_eyewitness
-RUN ./entrypoint.sh set_env install_sqlmap
+RUN ./entrypoint.sh 'set_env; install_nuclei'
+RUN ./entrypoint.sh "set_env; install_weevely"
+RUN ./entrypoint.sh "set_env; install_whatweb"
+RUN ./entrypoint.sh "set_env; install_wfuzz"
+RUN ./entrypoint.sh "set_env; install_gobuster"
+RUN ./entrypoint.sh "set_env; install_dirsearch"
+RUN ./entrypoint.sh "set_env; install_nosqlmap"
+RUN ./entrypoint.sh "set_env; install_joomscan"
+RUN ./entrypoint.sh "set_env; install_wpscan"
+RUN ./entrypoint.sh "set_env; install_droopescan"
+RUN ./entrypoint.sh "set_env; install_testssl"
+RUN ./entrypoint.sh "set_env; install_eyewitness"
+RUN ./entrypoint.sh "set_env; install_sqlmap"
 
 RUN ./entrypoint.sh post_install
 
