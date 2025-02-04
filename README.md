@@ -2,6 +2,14 @@
 This is a fork of the original [Exegol-Images project](https://github.com/ThePorgs/Exegol-Images).
 The objective is to get rid of unused exegol features that I do not personally use and that are taking so much disk space on the original images. Do not get me wrong, it is a good idea to provide everything you could need in Exegol, but having images that are taking more than 10% was a bit problematic for me. So I decided to dive into Exegol-Images and remove the features and programs I don't use.
 
+# TL;DR;
+```bash
+git clone https://github.com/tolfsh/Exegol-Images
+cd Exegol-Images
+exegol install --build-path $PWD mynewexegolimage web
+exegol start my-web-test mynewexegolimage
+```
+
 ## What did I do?
 I removed unused feature from the `sources/dockerfiles/*.dockerfile`. I juste worked on `base`, `ad` and `web` images.
 
@@ -14,6 +22,14 @@ Exegol-Images is using a smart way to install tools. Each tool installation is w
 In my version, the install scripts are not removed, even better the function are loaded in you `.zshrc`. This means if you need a tool, you can install it the *Exegol way* by running `install_TOOLNAME`.
 
 # Start using the images
+## Available Images
+| Image | Usage | Size | Original Exegol Size |
+| ----- | ----- | ---- | -------------------- |
+| base  | Contains base installation with multiple python versions, Go, Java, Rust... | ~8.5GB | N/A |
+| web   | Basic CLI tools for web penetration testing | ~11.8GB | ~ 26.1GB |
+| ad (:soon::tm:)   | Contains CLI tools for internal and Active Directory penetration testing | Coming soon | ~40.0GB |
+
+
 ## Using Original Exegol
 You can use the original [Exegol](https://github.com/ThePorgs/Exegol) project to build the images :
 ```bash
@@ -26,6 +42,11 @@ exegol install --build-path $PWD mynewexegolimage web
 - `web` is optional, and is the prefix of the dockerfile you want to use, here `web.dockerfile`. If you don't give it, Exegol will ask you.
 
 > **:warning: Warning !! Exegol uses dash `-` in images tags for versioning under the hood. Using a dash `-` inside the image name will cause the image to not be detected as a usable image but has an outdated image. I should make a PR to fix this... For now, just don't use dashes.**
+
+> **Note:** The base image is used to build the other images. You may need to build it first, otherwise it is pulled from the DockerHub
+
+# Create my custom images
+You can create you own custom image! The easiest way is to copy the template [dockerfile.template](./dockerfile.template) and fill it with the tools you need. Too easy :sunglasses:
 
 ## Using a custom Exegol version
 The repo used by Exegol is hardcoded, so I forked it to use my repo. This way, you can install images by downloading them from the DockerHub. This version is available here https://github.com/tolfsh/Exegol.

@@ -1,3 +1,9 @@
+This was used in the original Exegol-Images, nothing to see here anymore, go to root
+
+--------------------------------
+Original README
+--------------------------------
+
 This directory contains the dockerfiles used by the CI/CD pipeline, which builds images in two steps
 1. Base image, built on top of a `debian:12-slim`
 2. Final image, built on top of the base image
