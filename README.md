@@ -13,6 +13,23 @@ Exegol-Images is using a smart way to install tools. Each tool installation is w
 
 In my version, the install scripts are not removed, even better the function are loaded in you `.zshrc`. This means if you need a tool, you can install it the *Exegol way* by running `install_TOOLNAME`.
 
+# Start using the images
+## Using Original Exegol
+You can use the original [Exegol](https://github.com/ThePorgs/Exegol) project to build the images :
+```bash
+git clone https://github.com/tolfsh/Exegol-Images
+cd Exegol-Images
+exegol install --build-path $PWD mynewexegolimage web
+```
+- `--build-path` is the path where the dockerfiles and the and the sources are located
+- `mynewexegolimage` is the name you give to the imported image. After, you can create a container with `exegol start my-project mynewexegolimage`
+- `web` is optional, and is the prefix of the dockerfile you want to use, here `web.dockerfile`. If you don't give it, Exegol will ask you.
+
+> **:warning: Warning !! Exegol uses dash `-` in images tags for versioning under the hood. Using a dash `-` inside the image name will cause the image to not be detected as a usable image but has an outdated image. I should make a PR to fix this... For now, just don't use dashes.**
+
+## Using a custom Exegol version
+The repo used by Exegol is hardcoded, so I forked it to use my repo. This way, you can install images by downloading them from the DockerHub. This version is available here https://github.com/tolfsh/Exegol.
+
 ----------------------------
 
 *Below this is the original Exegol-Images README.*
