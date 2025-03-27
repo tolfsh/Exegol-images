@@ -37,7 +37,7 @@ concurrency:
 
 
 jobs:
-  # https://github.com/orgs/community/discussions/26671, "can’t pass ENV variables to the reusable workflow"
+  # https://github.com/orgs/community/discussions/26671, "can't pass ENV variables to the reusable workflow"
   init:
     name: Initialize
     runs-on: self-hosted

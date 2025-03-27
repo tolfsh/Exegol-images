@@ -12,7 +12,7 @@ COPY sources/assets /root/sources/assets
 
 WORKDIR /root/sources/install
 
-# WARNING: package_most_used can't be used with other functions other than: package_base, post_install
+# WARNING: package_most_used can't be used with other functions other than: package_base
 # ./entrypoint.sh package_most_used
 RUN chmod +x entrypoint.sh
 
